@@ -170,7 +170,7 @@ def main(print_version, print_versions, print_version_only, username, password,
 
         version.download(destination)
 
-        _error('download completed successfully')
+        _message('download completed successfully')
 
 
 if __name__ == '__main__':
