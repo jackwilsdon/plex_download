@@ -1,6 +1,11 @@
 Plex Version Downloader Changelog
 =================================
 
+1.0.0
+-----
+ - Improve CLI interface for downloading versions
+ - Rename ``DownloadClient`` to ``Client``
+
 0.1.5
 -----
  - General code improvements
