@@ -1,7 +1,7 @@
 from plex_version import client as _plex_client
 from plex_version import version as _plex_version
 
-from plex_downloader import version as _version
+from plex_download import version as _version
 
 
 class DownloadClient(_plex_client.Client):

@@ -9,18 +9,18 @@ from setup_functions import get_file_content, get_assignment_value
 
 
 setup_directory = _path.dirname(__file__)
-init_path = _path.join(setup_directory, 'plex_downloader', '__init__.py')
+init_path = _path.join(setup_directory, 'plex_download', '__init__.py')
 readme_path = _path.join(setup_directory, 'README.rst')
 
 
 _setuptools.setup(
-    name='plex_downloader',
+    name='plex_download',
     version=get_assignment_value(init_path, '__version__', True),
     description='Plex Version Downloader',
     long_description=get_file_content(readme_path),
     author='Jack Wilsdon',
     author_email='jack.wilsdon@gmail.com',
-    url='https://github.com/jackwilsdon/plex_downloader',
+    url='https://github.com/jackwilsdon/plex_download',
     license='AGPL-3.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -38,9 +38,9 @@ _setuptools.setup(
         'Programming Language :: Python :: 3.5'
     ],
     keywords='plex downloader',
-    packages=['plex_downloader'],
+    packages=['plex_download'],
     entry_points={
-        'console_scripts': ['plex_downloader=plex_downloader.__main__:main'],
+        'console_scripts': ['plex_download=plex_download.__main__:main'],
     },
     dependency_links=[
         ('git+https://github.com/jackwilsdon/plex_version.git@1.0.7'

@@ -6,12 +6,12 @@ import sys as _sys
 import argparse as _argparse
 
 import plex_version as _plex_version
-import plex_downloader as _plex_downloader
+import plex_download as _plex_download
 
 
 if _sys.argv[0].endswith('__main__.py'):
     _executable = _path.basename(_sys.executable)
-    _PROGRAM_NAME = _sys.argv[0] = '{} -m plex_downloader'.format(_executable)
+    _PROGRAM_NAME = _sys.argv[0] = '{} -m plex_download'.format(_executable)
 else:
     _PROGRAM_NAME = _path.basename(_sys.argv[0])
 
@@ -125,7 +125,7 @@ def _parse_arguments():
 def _raw_main(print_version, print_versions, print_version_only, username,
               password, platform, distro, build, destination):
     if print_version:
-        print(_plex_downloader.__version__)
+        print(_plex_download.__version__)
         return
 
     if not print_versions:
@@ -138,7 +138,7 @@ def _raw_main(print_version, print_versions, print_version_only, username,
         if build is None:
             _error('missing build')
 
-    client = _plex_downloader.client.DownloadClient(username, password)
+    client = _plex_download.client.DownloadClient(username, password)
 
     versions = client.get(platform, distro, build,
                           username is not None and password is not None)
