@@ -9,7 +9,11 @@ import plex_version as _plex_version
 import plex_downloader as _plex_downloader
 
 
-_PROGRAM_NAME = _path.basename(_sys.argv[0])
+if _sys.argv[0].endswith('__main__.py'):
+    _PROGRAM_NAME = _sys.argv[0] = 'python -m plex_downloader'
+else:
+    _PROGRAM_NAME = _path.basename(_sys.argv[0])
+
 
 _HELP_EPILOG = '''
 showing a list of the latest normal server versions:
