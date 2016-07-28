@@ -173,3 +173,7 @@ def _raw_main(print_version, print_versions, print_version_only, username,
 def main():
     args = _parse_arguments()
     return main(**vars(args))
+
+
+if __name__ == '__main__':
+    main()
