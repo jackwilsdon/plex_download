@@ -11,7 +11,7 @@ Plex Version Downloader Changelog
 
 0.1.3
 -----
- - Add special argv case for __main__
+ - Add special argv case for ``__main__``
 
 0.1.2
 -----
