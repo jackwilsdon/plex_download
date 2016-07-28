@@ -119,7 +119,7 @@ def _parse_arguments():
                         nargs='?',
                         help='the build of the version to download')
 
-    return parser.parse_args()
+    return vars(parser.parse_args())
 
 
 def _raw_main(print_version, print_versions, print_version_only, username,
@@ -175,9 +175,11 @@ def _raw_main(print_version, print_versions, print_version_only, username,
         _message('download completed successfully')
 
 
-def main():
-    args = _parse_arguments()
-    return main(**vars(args))
+def main(args=None):
+    if args is None:
+        args = _parse_arguments()
+
+    return _raw_main(**args)
 
 
 if __name__ == '__main__':
