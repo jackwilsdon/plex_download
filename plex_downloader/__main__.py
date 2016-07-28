@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-
-from __future__ import print_function
+from __future__ import print_function as _print_function
 
 from os import path as _path
-import textwrap as _textwrap
 import collections as _collections
 import sys as _sys
 import argparse as _argparse
@@ -120,8 +117,8 @@ def _parse_arguments():
     return parser.parse_args()
 
 
-def main(print_version, print_versions, print_version_only, username, password,
-         platform, distro, build, destination):
+def _raw_main(print_version, print_versions, print_version_only, username,
+              password, platform, distro, build, destination):
     if print_version:
         print(_plex_downloader.__version__)
         return
@@ -173,8 +170,6 @@ def main(print_version, print_versions, print_version_only, username, password,
         _message('download completed successfully')
 
 
-if __name__ == '__main__':
+def main():
     args = _parse_arguments()
-    result = main(**vars(args))
-
-    _sys.exit(result)
+    return main(**vars(args))

@@ -39,7 +39,9 @@ _setuptools.setup(
     ],
     keywords='plex downloader',
     packages=['plex_downloader'],
-    scripts=['bin/plex_downloader'],
+    entry_points={
+        'console_scripts': ['plex_downloader=plex_downloader.__main__:main'],
+    },
     dependency_links=[
         ('git+https://github.com/jackwilsdon/plex_version.git@1.0.7'
             '#egg=plex_version-1.0.7')
