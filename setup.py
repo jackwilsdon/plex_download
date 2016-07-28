@@ -5,7 +5,7 @@ Version information is retrieved using plex_version.
 
 from os import path as _path
 import setuptools as _setuptools
-from setup_functions import get_file_content, get_assignment_value
+from _setup_functions import get_file_content, get_assignment_value
 
 
 setup_directory = _path.dirname(__file__)
