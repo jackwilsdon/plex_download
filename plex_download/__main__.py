@@ -1,161 +1,119 @@
 from __future__ import print_function as _print_function
 
-from os import path as _path
-import collections as _collections
-import sys as _sys
 import argparse as _argparse
+import textwrap as _textwrap
+import collections as _collections
+from os import path as _path
+import sys as _sys
 
 import plex_version as _plex_version
 import plex_download as _plex_download
 
 
-if _path.samefile(__file__, _sys.argv[0]):
-    _module = _path.basename(_path.dirname(__file__))
-    _sys.argv[0] = '{} -m {}'.format(_sys.executable, _module)
-    _PROGRAM_NAME = _module
-else:
-    _PROGRAM_NAME = _path.basename(_sys.argv[0])
+class _DownloaderArgumentParser(_argparse.ArgumentParser):
+    def __init__(self, interface, *args, **kwargs):
+        super(_DownloaderArgumentParser, self).__init__(*args, **kwargs)
+        self.interface = interface
+
+    def error(self, *args, **kwargs):
+        self.print_usage(_sys.stderr)
+        self.interface.error(*args, **kwargs)
 
 
-_HELP_EPILOG = '''
-showing a list of the latest normal server versions:
-  {filename} -t server -s
+class DownloaderInterface(object):
+    HELP_EPILOG = _textwrap.dedent('''\
+    showing a list of the latest normal server versions:
+      {filename} -t server -s
 
-showing a list of the latest plex pass server versions:
-  {filename} -t server -s -u "Joe Bloggs" -p "hunter123"
+    showing a list of the latest plex pass server versions:
+      {filename} -t server -s -u "Joe Bloggs" -p "hunter123"
 
-downloading non plex pass server version:
-  {filename} -t server ubuntu linux-ubuntu-x86_64
+    downloading non plex pass server version:
+      {filename} -t server ubuntu linux-ubuntu-x86_64
 
-downloading plex pass server version:
-  {filename} -t server -u "Joe Bloggs" -p "hunter123" ubuntu \
-linux-ubuntu-x86_64
+    downloading plex pass server version:
+      {filename} -t server -u "Joe Bloggs" -p "hunter123" ubuntu \
+    linux-ubuntu-x86_64
 
-downloading to a specific directory:
-  {filename} -t server -d ~/downloads ubuntu linux-ubuntu-x86_64
+    downloading the latest server to a specific directory:
+      {filename} -t server -d ~/downloads ubuntu linux-ubuntu-x86_64
 
-downloading to a specific path:
-  {filename} -t server -d ~/downloads/plex.deb ubuntu linux-ubuntu-x86_64
-'''.format(filename=_PROGRAM_NAME)
+    downloading the latest server to a specific path:
+      {filename} -t server -d ~/downloads/plex.deb ubuntu linux-ubuntu-x86_64
+    ''')
 
-_PLATFORMS = _collections.OrderedDict([
-    ['server', _plex_version.version.PLEX_MEDIA_SERVER],
-    ['theater', _plex_version.version.PLEX_HOME_THEATER],
-    ['player', _plex_version.version.PLEX_MEDIA_PLAYER],
-    ['player_embedded', _plex_version.version.PLEX_MEDIA_PLAYER_EMBEDDED]
-])
+    PLATFORMS = _collections.OrderedDict([
+        ['server', _plex_version.version.PLEX_MEDIA_SERVER],
+        ['theater', _plex_version.version.PLEX_HOME_THEATER],
+        ['player', _plex_version.version.PLEX_MEDIA_PLAYER],
+        ['player_embedded', _plex_version.version.PLEX_MEDIA_PLAYER_EMBEDDED]
+    ])
 
-_PLATFORM_TEXT = ', '.join(_PLATFORMS.keys())
+    PLATFORM_TEXT = ', '.join(PLATFORMS.keys())
 
+    def __init__(self, module=None, command=None):
+        if module is None:
+            self.module = _path.basename(_sys.argv[0])
+        else:
+            self.module = module
 
-def _error(message, *args, **kwargs):
-    message = message.format(*args, **kwargs)
+        if command is None:
+            self.command = self.module
+        else:
+            self.command = command
 
-    print('{}: error: {}'.format(_PROGRAM_NAME, message), file=_sys.stderr)
+    def raw_message(self, message, *args, **kwargs):
+        print(str(message).format(*args, **kwargs))
 
-    _sys.exit(1)
+    def message(self, message, *args, **kwargs):
+        message = str(message).format(*args, **kwargs)
+        self.raw_message('{}: {}', self.module, message)
 
+    def raw_error(self, message, *args, **kwargs):
+        print(str(message).format(*args, **kwargs), file=_sys.stderr)
+        self.exit(1)
 
-def _message(message, *args, **kwargs):
-    message = message.format(*args, **kwargs)
+    def error(self, message, *args, **kwargs):
+        message = str(message).format(*args, **kwargs)
+        self.raw_error('{}: error: {}', self.module, message)
 
-    print('{}: {}'.format(_PROGRAM_NAME, message))
+    def exit(self, code=0):
+        _sys.exit(code)
 
+    def print_library_version(self):
+        self.raw_message('{} (plex_version {})', _plex_download.__version__,
+                         _plex_version.__version__)
 
-def _validate_platform(platform):
-    if platform not in _PLATFORM_TEXT:
-        raise _argparse.ArgumentTypeError('must be one of {}'.format(
-                                          _PLATFORM_TEXT))
+    def _get_versions(self, platform, distro=None, build=None, username=None,
+                      password=None, strict=True):
+        client = _plex_download.client.Client(username, password)
 
-    return _PLATFORMS[platform]
+        versions = client.get(platform, distro, build, client.logged_in)
 
+        if len(versions) == 0 and strict:
+            self.error('no versions found')
 
-def _parse_arguments():
-    parser = _argparse.ArgumentParser(
-        formatter_class=_argparse.RawDescriptionHelpFormatter,
-        description='Plex Version Downloader',
-        epilog=_HELP_EPILOG)
+        return versions
 
-    parser.add_argument('-t', '--platform',
-                        type=_validate_platform,
-                        help='type of plex software to download (possible '
-                        'values: {})'.format(_PLATFORM_TEXT),
-                        dest='platform',
-                        required=True)
+    def print_versions(self, platform, distro=None, build=None, username=None,
+                       password=None, version_only=False):
+        versions = self._get_versions(platform, distro, build, username,
+                                      password)
 
-    parser.add_argument('-s', '--show-latest',
-                        action='store_true',
-                        help='show latest server versions',
-                        dest='print_versions')
+        if version_only:
+            versions = [version.version_string for version in versions]
+        else:
+            versions = [str(version) for version in versions]
 
-    parser.add_argument('-r', '--version-only',
-                        action='store_true',
-                        help='only print version (use with -s)',
-                        dest='print_version_only')
+        self.raw_message('\n'.join(versions))
 
-    parser.add_argument('-u', '--username',
-                        help='set plex account username',
-                        dest='username')
+    def download_version(self, platform, distro, build, username=None,
+                         password=None, destination=None):
+        versions = self._get_versions(platform, distro, build, username,
+                                      password)
 
-    parser.add_argument('-p', '--password',
-                        help='set plex account password',
-                        dest='password')
-
-    parser.add_argument('-d', '--destination',
-                        help='set download location',
-                        dest='destination')
-
-    parser.add_argument('-v', '--version',
-                        action='store_true',
-                        help='print version information and exit',
-                        dest='print_version')
-
-    parser.add_argument('distro',
-                        metavar='DISTRO',
-                        nargs='?',
-                        help='the distro of the version to download')
-
-    parser.add_argument('build',
-                        metavar='BUILD',
-                        nargs='?',
-                        help='the build of the version to download')
-
-    return vars(parser.parse_args())
-
-
-def _raw_main(print_version, print_versions, print_version_only, username,
-              password, platform, distro, build, destination):
-    if print_version:
-        print(_plex_download.__version__)
-        return
-
-    if not print_versions:
-        if print_version_only:
-            _error('-s/--show-latest is required to use -r/--version-only')
-
-        if distro is None:
-            _error('missing distro')
-
-        if build is None:
-            _error('missing build')
-
-    client = _plex_download.client.DownloadClient(username, password)
-
-    versions = client.get(platform, distro, build,
-                          username is not None and password is not None)
-
-    if len(versions) == 0:
-        _error('no versions found')
-
-    if print_versions:
-        for version in versions:
-            if print_version_only:
-                print(version.version_string)
-            else:
-                print(str(version))
-    else:
         if len(versions) > 1:
-            _error('multiple versions found')
+            self.error('found {} versions', len(versions))
 
         version = versions[0]
 
@@ -165,22 +123,116 @@ def _raw_main(print_version, print_versions, print_version_only, username,
         if _path.isdir(destination):
             destination = _path.join(destination, version.filename)
 
-        _message('starting download for "{}" to "{}"', version,
-                 _path.relpath(destination))
-
         if _path.lexists(destination):
-            _error('destination file already exists')
+            self.error('file already exists')
+
+        self.message('starting download...')
 
         version.download(destination)
 
-        _message('download completed successfully')
+        self.message('download complete')
+
+    def _validate_platform(self, platform):
+        if platform not in self.PLATFORMS:
+            raise _argparse.ArgumentTypeError('must be one of {}'.format(
+                                              self.PLATFORM_TEXT))
+
+        return self.PLATFORMS[platform]
+
+    def _execute_arguments(self, arguments):
+        if arguments['print_library_version']:
+            return self.print_library_version()
+        elif arguments['print_versions']:
+            return self.print_versions(
+                platform=arguments['platform'],
+                distro=arguments['distro'],
+                build=arguments['build'],
+                username=arguments['username'],
+                password=arguments['password'],
+                version_only=arguments['print_version_only']
+            )
+        else:
+            return self.download_version(
+                platform=arguments['platform'],
+                distro=arguments['distro'],
+                build=arguments['build'],
+                username=arguments['username'],
+                password=arguments['password'],
+                destination=arguments['destination'],
+            )
+
+    def execute(self, arguments=None):
+        parser = _DownloaderArgumentParser(
+            self,
+            prog=self.command,
+            description='Plex Version Downloader',
+            epilog=self.HELP_EPILOG.format(filename=self.command),
+            formatter_class=_argparse.RawDescriptionHelpFormatter
+        )
+
+        parser.add_argument('-v', '--version',
+                            action='store_true',
+                            help='print version information and exit',
+                            dest='print_library_version')
+
+        parser.add_argument('-s', '--show-versions',
+                            action='store_true',
+                            help='show server versions without downloading',
+                            dest='print_versions')
+
+        parser.add_argument('-r', '--version-only',
+                            action='store_true',
+                            help='only print server version',
+                            dest='print_version_only')
+
+        parser.add_argument('-u', '--username',
+                            help='set plex account username',
+                            dest='username')
+
+        parser.add_argument('-p', '--password',
+                            help='set plex account password',
+                            dest='password')
+
+        parser.add_argument('-d', '--destination',
+                            help='set download location',
+                            dest='destination')
+
+        parser.add_argument('platform',
+                            type=self._validate_platform,
+                            help=('the platform of the version to download'
+                                  ' (possible values: {})').format(
+                                  self.PLATFORM_TEXT),
+                            metavar='PLATFORM')
+
+        parser.add_argument('distro',
+                            help='the distro of the version to download',
+                            metavar='DISTRO')
+
+        parser.add_argument('build',
+                            help='the build of the version to download',
+                            metavar='BUILD')
+
+        parsed_arguments = vars(parser.parse_args(arguments))
+        result = self._execute_arguments(parsed_arguments)
+
+        return result if result is not None else 0
 
 
-def main(args=None):
-    if args is None:
-        args = _parse_arguments()
+def main():
+    module = _path.basename(_path.dirname(__file__))
+    command = None
 
-    return _raw_main(**args)
+    if _path.samefile(__file__, _sys.argv[0]):
+        executable = _path.basename(_sys.executable)
+        command = '{} -m {}'.format(executable, module)
+
+    interface = DownloaderInterface(module, command)
+
+    try:
+        result = interface.execute()
+        interface.exit(result)
+    except Exception as exception:
+        interface.error(exception)
 
 
 if __name__ == '__main__':
