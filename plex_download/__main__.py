@@ -53,7 +53,7 @@ class DownloaderInterface(object):
 
     def __init__(self, module=None, command=None):
         if module is None:
-            self.module = _path.basename(_sys.argv[0])
+            self.module = _path.basename(_path.dirname(__file__))
         else:
             self.module = module
 
