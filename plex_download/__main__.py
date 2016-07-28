@@ -9,12 +9,12 @@ import plex_version as _plex_version
 import plex_download as _plex_download
 
 
-if _sys.argv[0].endswith('__main__.py'):
-    _executable = _path.basename(_sys.executable)
-    _PROGRAM_NAME = _sys.argv[0] = '{} -m plex_download'.format(_executable)
-else:
-    _PROGRAM_NAME = _path.basename(_sys.argv[0])
+if _path.samefile(__file__, _sys.argv[0]):
+    _module = _path.basename(_path.dirname(__file__))
+    _sys.argv[0] = '{} -m {}'.format(_sys.executable, _module)
 
+
+_PROGRAM_NAME = _path.basename(_sys.argv[0])
 
 _HELP_EPILOG = '''
 showing a list of the latest normal server versions:
