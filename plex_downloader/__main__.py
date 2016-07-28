@@ -10,7 +10,8 @@ import plex_downloader as _plex_downloader
 
 
 if _sys.argv[0].endswith('__main__.py'):
-    _PROGRAM_NAME = _sys.argv[0] = 'python -m plex_downloader'
+    _executable = _path.basename(_sys.executable)
+    _PROGRAM_NAME = _sys.argv[0] = '{} -m plex_downloader'.format(_executable)
 else:
     _PROGRAM_NAME = _path.basename(_sys.argv[0])
 
