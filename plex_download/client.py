@@ -4,9 +4,9 @@ from plex_version import version as _plex_version
 from plex_download import version as _version
 
 
-class DownloadClient(_plex_client.Client):
+class Client(_plex_client.Client):
     def __init__(self, *args, **kwargs):
-        super(DownloadClient, self).__init__(*args, **kwargs)
+        super(Client, self).__init__(*args, **kwargs)
 
     def _wrap_versions(self, versions):
         versions_copy = versions[:]
@@ -19,11 +19,11 @@ class DownloadClient(_plex_client.Client):
         return versions_copy
 
     def get(self, *args, **kwargs):
-        matches = super(DownloadClient, self).get(*args, **kwargs)
+        matches = super(Client, self).get(*args, **kwargs)
 
         self.versions = self._wrap_versions(self.versions)
 
         return self._wrap_versions(matches)
 
 
-__all__ = ('DownloadClient',)
+__all__ = ('Client',)
