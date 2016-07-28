@@ -12,9 +12,10 @@ import plex_download as _plex_download
 if _path.samefile(__file__, _sys.argv[0]):
     _module = _path.basename(_path.dirname(__file__))
     _sys.argv[0] = '{} -m {}'.format(_sys.executable, _module)
+    _PROGRAM_NAME = _module
+else:
+    _PROGRAM_NAME = _path.basename(_sys.argv[0])
 
-
-_PROGRAM_NAME = _path.basename(_sys.argv[0])
 
 _HELP_EPILOG = '''
 showing a list of the latest normal server versions:
