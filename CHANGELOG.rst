@@ -1,6 +1,10 @@
 Plex Version Downloader Changelog
 =================================
 
+0.1.4
+-----
+ - Use correct python executable when setting argv
+
 0.1.3
 -----
  - Add special argv case for __main__
