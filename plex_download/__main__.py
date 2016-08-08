@@ -142,14 +142,14 @@ class DownloaderInterface(object):
     def _execute_arguments(self, arguments):
         if arguments['print_library_version']:
             return self.print_library_version()
-        elif arguments['print_versions']:
+        elif arguments['print_versions'] or arguments['print_versions_only']:
             return self.print_versions(
                 platform=arguments['platform'],
                 distro=arguments['distro'],
                 build=arguments['build'],
                 username=arguments['username'],
                 password=arguments['password'],
-                version_only=arguments['print_version_only']
+                version_only=arguments['print_versions_only']
             )
         else:
             return self.download_version(
@@ -180,10 +180,11 @@ class DownloaderInterface(object):
                             help='show server versions without downloading',
                             dest='print_versions')
 
-        parser.add_argument('-r', '--version-only',
+        parser.add_argument('-S', '--show-versions-only',
                             action='store_true',
-                            help='only print server version',
-                            dest='print_version_only')
+                            help='show server versions without downloading '
+                                 'and without extra metadata',
+                            dest='print_versions_only')
 
         parser.add_argument('-u', '--username',
                             help='set plex account username',
@@ -218,24 +219,26 @@ class DownloaderInterface(object):
         parsed_arguments = vars(parser.parse_args(arguments))
         required_arguments = []
 
-        if (not parsed_arguments['print_versions'] and
-                parsed_arguments['print_version_only']):
-            parser.error('-r/--version-only can only be used with '
-                         '-s/--show-versions')
+        if not parsed_arguments['print_library_version']:
+            if (parsed_arguments['print_versions'] and
+                    parsed_arguments['print_versions_only']):
+                parser.error('-s/--show-versions cannot be used with '
+                             '-S/--show-versions-only')
 
-        if parsed_arguments['platform'] is None:
-            required_arguments.append('PLATFORM')
+            if parsed_arguments['platform'] is None:
+                required_arguments.append('PLATFORM')
 
-        if not parsed_arguments['print_versions']:
-            if parsed_arguments['distro'] is None:
-                required_arguments.append('DISTRO')
+            if (not parsed_arguments['print_versions'] and
+                    not parsed_arguments['print_versions_only']):
+                if parsed_arguments['distro'] is None:
+                    required_arguments.append('DISTRO')
 
-            if parsed_arguments['build'] is None:
-                required_arguments.append('BUILD')
+                if parsed_arguments['build'] is None:
+                    required_arguments.append('BUILD')
 
-        if len(required_arguments) > 0:
-            parser.error('the following arguments are required for '
-                         'downloading: {}', ', '.join(required_arguments))
+            if len(required_arguments) > 0:
+                parser.error('the following arguments are required for '
+                             'downloading: {}', ', '.join(required_arguments))
 
         result = self._execute_arguments(parsed_arguments)
 
