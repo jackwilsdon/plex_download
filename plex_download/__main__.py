@@ -198,6 +198,7 @@ class DownloaderInterface(object):
                             dest='destination')
 
         parser.add_argument('platform',
+                            nargs='?',
                             type=self._validate_platform,
                             help=('the platform of the version to download'
                                   ' (possible values: {})').format(
@@ -205,14 +206,37 @@ class DownloaderInterface(object):
                             metavar='PLATFORM')
 
         parser.add_argument('distro',
+                            nargs='?',
                             help='the distro of the version to download',
                             metavar='DISTRO')
 
         parser.add_argument('build',
+                            nargs='?',
                             help='the build of the version to download',
                             metavar='BUILD')
 
         parsed_arguments = vars(parser.parse_args(arguments))
+        required_arguments = []
+
+        if (not parsed_arguments['print_versions'] and
+                parsed_arguments['print_version_only']):
+            parser.error('-r/--version-only can only be used with '
+                         '-s/--show-versions')
+
+        if parsed_arguments['platform'] is None:
+            required_arguments.append('PLATFORM')
+
+        if not parsed_arguments['print_versions']:
+            if parsed_arguments['distro'] is None:
+                required_arguments.append('DISTRO')
+
+            if parsed_arguments['build'] is None:
+                required_arguments.append('BUILD')
+
+        if len(required_arguments) > 0:
+            parser.error('the following arguments are required for '
+                         'downloading: {}', ', '.join(required_arguments))
+
         result = self._execute_arguments(parsed_arguments)
 
         return result if result is not None else 0
