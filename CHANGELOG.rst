@@ -1,6 +1,11 @@
 Plex Version Downloader Changelog
 =================================
 
+1.0.1
+-----
+ - Make PLATFORM, DISTRO and BUILD optional for version query
+ - Rename ``-r/--version-only`` argument to ``-S/--show-version-only`` and make it mutually exclusive with ``-s/--show-versions``
+
 1.0.0
 -----
  - Improve CLI interface for downloading versions
