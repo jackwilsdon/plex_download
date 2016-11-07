@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import plex_version
 
 import plex_download.version

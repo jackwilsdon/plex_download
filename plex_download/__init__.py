@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from plex_download.client import DownloadClient
 from plex_download.version import DownloadablePlexVersion
 
