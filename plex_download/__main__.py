@@ -33,13 +33,13 @@ class DownloaderInterface(object):
       {filename} server ubuntu linux-ubuntu-x86_64
 
     downloading plex pass server version:
-      {filename} -u "Joe Bloggs" -p "hunter123" server ubuntu linux-ubuntu-x86_64
+      {filename} -u "AzureDiamond" -p "hunter123" server english windows-i386
 
     downloading the latest server to a specific directory:
-      {filename} -d ~/downloads server ubuntu linux-ubuntu-x86_64
+      {filename} -d ~/downloads server macosx darwin-x86_64
 
     downloading the latest server to a specific path:
-      {filename} -d ~/downloads/plex.deb server ubuntu linux-ubuntu-x86_64
+      {filename} -d ~/downloads/plex.deb server synology linux-synology-i686
     ''')
 
     PLATFORMS = collections.OrderedDict([

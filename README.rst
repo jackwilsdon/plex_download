@@ -50,12 +50,12 @@ Plex Version Downloader is tool designed to allow the quick and easy downloading
       plex_download server ubuntu linux-ubuntu-x86_64
 
     downloading plex pass server version:
-      plex_download -u "Joe Bloggs" -p "hunter123" server ubuntu linux-ubuntu-x86_64
+      plex_download -u "AzureDiamond" -p "hunter123" server english windows-i386
 
     downloading the latest server to a specific directory:
-      plex_download -d ~/downloads server ubuntu linux-ubuntu-x86_64
+      plex_download -d ~/downloads server macosx darwin-x86_64
 
     downloading the latest server to a specific path:
-      plex_download -d ~/downloads/plex.deb server ubuntu linux-ubuntu-x86_64
+      plex_download -d ~/downloads/plex.deb server synology linux-synology-i686
 
 .. _plex.tv: https://plex.tv
