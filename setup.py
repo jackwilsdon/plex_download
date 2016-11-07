@@ -1,23 +1,22 @@
-'''Plex Version Downloader
+from os import path
 
-Version information is retrieved using plex_version.
-'''
+import setuptools
 
-from os import path as _path
-import setuptools as _setuptools
-from _setup_functions import get_file_content, get_assignment_value
+import setup_functions
 
 
-setup_directory = _path.dirname(__file__)
-init_path = _path.join(setup_directory, 'plex_download', '__init__.py')
-readme_path = _path.join(setup_directory, 'README.rst')
+setup_directory = path.dirname(__file__)
+init_path = path.join(setup_directory, 'plex_download', '__init__.py')
+readme_path = path.join(setup_directory, 'README.rst')
+version = setup_functions.get_assignment_value(init_path, '__version__', True)
+readme = setup_functions.get_file_content(readme_path)
 
 
-_setuptools.setup(
+setuptools.setup(
     name='plex_download',
-    version=get_assignment_value(init_path, '__version__', True),
+    version=version,
     description='Plex Version Downloader',
-    long_description=get_file_content(readme_path),
+    long_description=readme,
     author='Jack Wilsdon',
     author_email='jack.wilsdon@gmail.com',
     url='https://github.com/jackwilsdon/plex_download',
@@ -50,3 +49,6 @@ _setuptools.setup(
         'plex_version==1.0.8'
     ]
 )
+
+
+__all__ = ()
