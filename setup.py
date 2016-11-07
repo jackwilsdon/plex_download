@@ -41,12 +41,8 @@ setuptools.setup(
     entry_points={
         'console_scripts': ['plex_download=plex_download.__main__:main'],
     },
-    dependency_links=[
-        ('git+https://github.com/jackwilsdon/plex_version.git@1.1.0'
-            '#egg=plex_version-1.1.0')
-    ],
     install_requires=[
-        'plex_version==1.1.0'
+        'plex_version>=1.1.1,<2'
     ]
 )
 
