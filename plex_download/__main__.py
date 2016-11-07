@@ -24,23 +24,22 @@ class _DownloaderArgumentParser(argparse.ArgumentParser):
 class DownloaderInterface(object):
     HELP_EPILOG = textwrap.dedent('''\
     showing a list of the latest normal server versions:
-      {filename} -t server -s
+      {filename} -s server
 
     showing a list of the latest plex pass server versions:
-      {filename} -t server -s -u "Joe Bloggs" -p "hunter123"
+      {filename} -s -u "Joe Bloggs" -p "hunter123" server
 
     downloading non plex pass server version:
-      {filename} -t server ubuntu linux-ubuntu-x86_64
+      {filename} server ubuntu linux-ubuntu-x86_64
 
     downloading plex pass server version:
-      {filename} -t server -u "Joe Bloggs" -p "hunter123" ubuntu \
-    linux-ubuntu-x86_64
+      {filename} -u "Joe Bloggs" -p "hunter123" server ubuntu linux-ubuntu-x86_64
 
     downloading the latest server to a specific directory:
-      {filename} -t server -d ~/downloads ubuntu linux-ubuntu-x86_64
+      {filename} -d ~/downloads server ubuntu linux-ubuntu-x86_64
 
     downloading the latest server to a specific path:
-      {filename} -t server -d ~/downloads/plex.deb ubuntu linux-ubuntu-x86_64
+      {filename} -d ~/downloads/plex.deb server ubuntu linux-ubuntu-x86_64
     ''')
 
     PLATFORMS = collections.OrderedDict([

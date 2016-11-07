@@ -41,21 +41,21 @@ Plex Version Downloader is tool designed to allow the quick and easy downloading
                             set download location
 
     showing a list of the latest normal server versions:
-      plex_download -t server -s
+      plex_download -s server
 
     showing a list of the latest plex pass server versions:
-      plex_download -t server -s -u "Joe Bloggs" -p "hunter123"
+      plex_download -s -u "Joe Bloggs" -p "hunter123" server
 
     downloading non plex pass server version:
-      plex_download -t server ubuntu linux-ubuntu-x86_64
+      plex_download server ubuntu linux-ubuntu-x86_64
 
     downloading plex pass server version:
-      plex_download -t server -u "Joe Bloggs" -p "hunter123" ubuntu     linux-ubuntu-x86_64
+      plex_download -u "Joe Bloggs" -p "hunter123" server ubuntu linux-ubuntu-x86_64
 
     downloading the latest server to a specific directory:
-      plex_download -t server -d ~/downloads ubuntu linux-ubuntu-x86_64
+      plex_download -d ~/downloads server ubuntu linux-ubuntu-x86_64
 
     downloading the latest server to a specific path:
-      plex_download -t server -d ~/downloads/plex.deb ubuntu linux-ubuntu-x86_64
+      plex_download -d ~/downloads/plex.deb server ubuntu linux-ubuntu-x86_64
 
 .. _plex.tv: https://plex.tv
