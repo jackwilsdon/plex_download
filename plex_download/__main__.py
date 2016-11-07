@@ -1,27 +1,28 @@
-from __future__ import print_function as _print_function
+from __future__ import absolute_import, print_function
 
-import argparse as _argparse
-import textwrap as _textwrap
-import collections as _collections
-from os import path as _path
-import sys as _sys
+import argparse
+import collections
+import sys
+import textwrap
+from os import path
 
-import plex_version as _plex_version
-import plex_download as _plex_download
+import plex_version
+
+import plex_download
 
 
-class _DownloaderArgumentParser(_argparse.ArgumentParser):
+class _DownloaderArgumentParser(argparse.ArgumentParser):
     def __init__(self, interface, *args, **kwargs):
         super(_DownloaderArgumentParser, self).__init__(*args, **kwargs)
         self.interface = interface
 
     def error(self, *args, **kwargs):
-        self.print_usage(_sys.stderr)
+        self.print_usage(sys.stderr)
         self.interface.error(*args, **kwargs)
 
 
 class DownloaderInterface(object):
-    HELP_EPILOG = _textwrap.dedent('''\
+    HELP_EPILOG = textwrap.dedent('''\
     showing a list of the latest normal server versions:
       {filename} -t server -s
 
@@ -42,18 +43,18 @@ class DownloaderInterface(object):
       {filename} -t server -d ~/downloads/plex.deb ubuntu linux-ubuntu-x86_64
     ''')
 
-    PLATFORMS = _collections.OrderedDict([
-        ['server', _plex_version.version.PLEX_MEDIA_SERVER],
-        ['theater', _plex_version.version.PLEX_HOME_THEATER],
-        ['player', _plex_version.version.PLEX_MEDIA_PLAYER],
-        ['player_embedded', _plex_version.version.PLEX_MEDIA_PLAYER_EMBEDDED]
+    PLATFORMS = collections.OrderedDict([
+        ['server', plex_version.PLEX_MEDIA_SERVER],
+        ['theater', plex_version.PLEX_HOME_THEATER],
+        ['player', plex_version.PLEX_MEDIA_PLAYER],
+        ['player_embedded', plex_version.PLEX_MEDIA_PLAYER_EMBEDDED]
     ])
 
     PLATFORM_TEXT = ', '.join(PLATFORMS.keys())
 
     def __init__(self, module=None, command=None):
         if module is None:
-            self.module = _path.basename(_path.dirname(__file__))
+            self.module = path.basename(path.dirname(__file__))
         else:
             self.module = module
 
@@ -70,7 +71,7 @@ class DownloaderInterface(object):
         self.raw_message('{}: {}', self.module, message)
 
     def raw_error(self, message, *args, **kwargs):
-        print(str(message).format(*args, **kwargs), file=_sys.stderr)
+        print(str(message).format(*args, **kwargs), file=sys.stderr)
         self.exit(1)
 
     def error(self, message, *args, **kwargs):
@@ -78,15 +79,15 @@ class DownloaderInterface(object):
         self.raw_error('{}: error: {}', self.module, message)
 
     def exit(self, code=0):
-        _sys.exit(code)
+        sys.exit(code)
 
     def print_library_version(self):
-        self.raw_message('{} (plex_version {})', _plex_download.__version__,
-                         _plex_version.__version__)
+        self.raw_message('{} (plex_version {})', plex_download.__version__,
+                         plex_version.__version__)
 
     def _get_versions(self, platform, distro=None, build=None, username=None,
                       password=None, strict=True):
-        client = _plex_download.client.Client(username, password)
+        client = plex_download.DownloadClient(username, password)
 
         versions = client.get(platform, distro, build, client.logged_in)
 
@@ -120,10 +121,10 @@ class DownloaderInterface(object):
         if destination is None:
             destination = version.filename
 
-        if _path.isdir(destination):
-            destination = _path.join(destination, version.filename)
+        if path.isdir(destination):
+            destination = path.join(destination, version.filename)
 
-        if _path.lexists(destination):
+        if path.lexists(destination):
             self.error('file already exists')
 
         self.message('starting download...')
@@ -134,7 +135,7 @@ class DownloaderInterface(object):
 
     def _validate_platform(self, platform):
         if platform not in self.PLATFORMS:
-            raise _argparse.ArgumentTypeError('must be one of {}'.format(
+            raise argparse.ArgumentTypeError('must be one of {}'.format(
                                               self.PLATFORM_TEXT))
 
         return self.PLATFORMS[platform]
@@ -167,7 +168,7 @@ class DownloaderInterface(object):
             prog=self.command,
             description='Plex Version Downloader',
             epilog=self.HELP_EPILOG.format(filename=self.command),
-            formatter_class=_argparse.RawDescriptionHelpFormatter
+            formatter_class=argparse.RawDescriptionHelpFormatter
         )
 
         parser.add_argument('-v', '--version',
@@ -246,11 +247,11 @@ class DownloaderInterface(object):
 
 
 def main():
-    module = _path.basename(_path.dirname(__file__))
+    module = path.basename(path.dirname(__file__))
     command = None
 
-    if _path.samefile(__file__, _sys.argv[0]):
-        executable = _path.basename(_sys.executable)
+    if path.samefile(__file__, sys.argv[0]):
+        executable = path.basename(sys.executable)
         command = '{} -m {}'.format(executable, module)
 
     interface = DownloaderInterface(module, command)
@@ -264,3 +265,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+__all__ = ()

@@ -1,37 +1,33 @@
+
+import posixpath as path
+
 try:
-    import urlparse as _urlparse
+    import urlparse
 except ImportError:
-    import urllib.parse as _urlparse
+    import urllib.parse as urlparse
 
-from os import path as _path
-import requests as _requests
-
-from plex_version import version as _plex_version
+import plex_version
+import requests
 
 
-class DownloadablePlexVersion(_plex_version.PlexVersion):
+class DownloadablePlexVersion(plex_version.PlexVersion):
     def __init__(self, *args, **kwargs):
         super(DownloadablePlexVersion, self).__init__(*args, **kwargs)
 
     @property
     def filename(self):
-        url_pieces = _urlparse.urlparse(self.url)
-        url_path = _path.normpath(url_pieces.path)
-
-        return _path.basename(url_path)
+        url_pieces = urlparse.urlparse(self.url)
+        urlpath = path.normpath(url_pieces.path)
+        return path.basename(urlpath)
 
     def download(self, destination):
-        response = _requests.get(self.url, stream=True)
+        response = requests.get(self.url, stream=True)
         response.raise_for_status()
 
         with open(destination, 'wb') as destfile:
             for block in response.iter_content(1024):
                 if block:
                     destfile.write(block)
-
-    @classmethod
-    def from_version(cls, version):
-        return cls(**vars(version))
 
 
 __all__ = ('DownloadablePlexVersion',)
