@@ -21,7 +21,7 @@ _setuptools.setup(
     author='Jack Wilsdon',
     author_email='jack.wilsdon@gmail.com',
     url='https://github.com/jackwilsdon/plex_download',
-    license='AGPL-3.0',
+    packages=['plex_download'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -37,8 +37,8 @@ _setuptools.setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5'
     ],
+    license='AGPL-3.0',
     keywords='plex downloader',
-    packages=['plex_download'],
     entry_points={
         'console_scripts': ['plex_download=plex_download.__main__:main'],
     },
