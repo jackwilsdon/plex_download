@@ -27,13 +27,13 @@ class DownloaderInterface(object):
       {filename} -s server
 
     showing a list of the latest plex pass server versions:
-      {filename} -s -u "Joe Bloggs" -p "hunter123" server
+      {filename} -s -u "AzureDiamond" -p "hunter2" server
 
     downloading non plex pass server version:
       {filename} server ubuntu linux-ubuntu-x86_64
 
     downloading plex pass server version:
-      {filename} -u "AzureDiamond" -p "hunter123" server english windows-i386
+      {filename} -u "AzureDiamond" -p "hunter2" server english windows-i386
 
     downloading the latest server to a specific directory:
       {filename} -d ~/downloads server macosx darwin-x86_64
