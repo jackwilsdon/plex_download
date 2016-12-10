@@ -4,6 +4,7 @@ import argparse
 import collections
 import sys
 import textwrap
+import traceback
 from os import path
 
 import plex_version
@@ -52,6 +53,8 @@ class DownloaderInterface(object):
     PLATFORM_TEXT = ', '.join(PLATFORMS.keys())
 
     def __init__(self, module=None, command=None):
+        self.verbosity = 0
+
         if module is None:
             self.module = path.basename(path.dirname(__file__))
         else:
@@ -61,6 +64,10 @@ class DownloaderInterface(object):
             self.command = self.module
         else:
             self.command = command
+
+    @property
+    def verbose(self):
+        return self.verbosity > 0
 
     def raw_message(self, message, *args, **kwargs):
         print(str(message).format(*args, **kwargs))
@@ -80,6 +87,10 @@ class DownloaderInterface(object):
         self.raw_error('{}: error: {}', self.module, message,
                        fatal=kwargs.get('fatal', True))
 
+    def debug(self, level, message, *args, **kwargs):
+        if self.verbosity >= level:
+            print(str(message).format(*args, **kwargs))
+
     def exit(self, code=0):
         sys.exit(code)
 
@@ -89,12 +100,15 @@ class DownloaderInterface(object):
 
     def _get_versions(self, platform, distro=None, build=None, username=None,
                       password=None, strict=True):
-        client = plex_download.DownloadClient(username, password)
+        client = plex_download.DownloadClient(username, password,
+                                              interface=self)
 
         versions = client.get(platform, distro, build, client.logged_in)
 
         if len(versions) == 0 and strict:
             self.error('no versions found')
+
+        self.debug(1, 'found {} versions', len(versions))
 
         return versions
 
@@ -104,11 +118,15 @@ class DownloaderInterface(object):
                                       password)
 
         if version_only:
-            versions = [version.version_string for version in versions]
+            version_strings = [version.version_string for version in versions]
         else:
-            versions = [str(version) for version in versions]
+            version_strings = [str(version) for version in versions]
 
-        self.raw_message('\n'.join(versions))
+        if self.verbosity > 1:
+            for index, version in enumerate(versions):
+                version_strings[index] += ' {}'.format(version.url)
+
+        self.raw_message('\n'.join(version_strings))
 
     def download_version(self, platform, distro, build, username=None,
                          password=None, destination=None):
@@ -143,6 +161,8 @@ class DownloaderInterface(object):
         return self.PLATFORMS[platform]
 
     def _execute_arguments(self, arguments):
+        self.verbosity = arguments['verbosity']
+
         if arguments['print_library_version']:
             return self.print_library_version()
         elif arguments['print_versions'] or arguments['print_versions_only']:
@@ -173,7 +193,12 @@ class DownloaderInterface(object):
             formatter_class=argparse.RawDescriptionHelpFormatter
         )
 
-        parser.add_argument('-v', '--version',
+        parser.add_argument('-v', '--verbose',
+                            action='count',
+                            help='enable verbose output (use twice for more)',
+                            dest='verbosity')
+
+        parser.add_argument('-V', '--version',
                             action='store_true',
                             help='print version information and exit',
                             dest='print_library_version')
@@ -262,8 +287,8 @@ def main():
         result = interface.execute()
         interface.exit(result)
     except Exception as exception:
-        interface.error(exception)
-
+        interface.error(exception, fatal=not interface.verbose)
+        interface.raw_error(traceback.format_exc())
 
 if __name__ == '__main__':
     main()
