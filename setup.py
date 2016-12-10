@@ -44,7 +44,7 @@ setuptools.setup(
         'console_scripts': ['plex_download=plex_download.__main__:main'],
     },
     install_requires=[
-        'plex_version>=1.1.1,<2'
+        'plex_version>=1.1.3,<1.2'
     ]
 )
 
