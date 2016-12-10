@@ -71,11 +71,14 @@ class DownloaderInterface(object):
 
     def raw_error(self, message, *args, **kwargs):
         print(str(message).format(*args, **kwargs), file=sys.stderr)
-        self.exit(1)
+
+        if kwargs.get('fatal', True):
+            self.exit(1)
 
     def error(self, message, *args, **kwargs):
         message = str(message).format(*args, **kwargs)
-        self.raw_error('{}: error: {}', self.module, message)
+        self.raw_error('{}: error: {}', self.module, message,
+                       fatal=kwargs.get('fatal', True))
 
     def exit(self, code=0):
         sys.exit(code)
