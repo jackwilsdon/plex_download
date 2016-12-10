@@ -14,7 +14,7 @@ Plex Version Downloader is tool designed to allow the quick and easy downloading
     plex_download: download complete
 
     $ plex_download -h
-    usage: plex_download [-h] [-v] [-s] [-S] [-u USERNAME] [-p PASSWORD]
+    usage: plex_download [-h] [-v] [-V] [-s] [-S] [-u USERNAME] [-p PASSWORD]
                          [-d DESTINATION]
                          [PLATFORM] [DISTRO] [BUILD]
 
@@ -28,7 +28,8 @@ Plex Version Downloader is tool designed to allow the quick and easy downloading
 
     optional arguments:
       -h, --help            show this help message and exit
-      -v, --version         print version information and exit
+      -v, --verbose         enable verbose output (use twice for more)
+      -V, --version         print version information and exit
       -s, --show-versions   show server versions without downloading
       -S, --show-versions-only
                             show server versions without downloading and without
