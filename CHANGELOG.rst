@@ -1,6 +1,11 @@
 Plex Version Downloader Changelog
 =================================
 
+1.1.0
+-----
+ - Increment ``plex_version`` dependency version to 1.1.3
+ - Add verbose flag ``-v/--verbose``
+
 1.0.6
 -----
  - Fix outdated documentation
