@@ -12,8 +12,6 @@ import requests
 
 
 class DownloadablePlexVersion(plex_version.PlexVersion):
-    def __init__(self, *args, **kwargs):
-        super(DownloadablePlexVersion, self).__init__(*args, **kwargs)
 
     @property
     def filename(self):
